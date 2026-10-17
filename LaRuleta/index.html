@@ -4559,7 +4559,7 @@ const SPECIAL_WHEEL_GAMES = [
   SEGMENTS.splice(position, 0, SPECIAL_WHEEL_GAMES[i]);
 });
 const HOLD_WHEEL_SEGMENTS = [
-  { label: "ME LO\nQUEDO", type: "prize", hold: "keep", value: 300, prizeName: "Me lo quedo", detail: "Premio guardado: se usa cuando el jugador quiera, dentro de su turno.", color: "#0f766e" },
+  { label: "ME LO\nQUEDO", type: "prize", hold: "keep", value: 300, prizeName: "Me lo quedo", detail: "Premio guardado: en su turno, el jugador pincha el tri\xE1ngulo y elige a otro jugador para quitarle todos sus puntos de la ronda y sus premios.", color: "#0f766e" },
   { label: "DOBLE\nLETRA", type: "prize", hold: "double", value: 300, prizeName: "Doble letra", detail: "Permite elegir dos consonantes con los puntos que hayan salido en la ruleta.", color: "#db2777" },
   { label: "COMOD\xCDN\nTAMARA", type: "prize", hold: "tamara", value: 300, prizeName: "Comod\xEDn Tamara", detail: "Recupera el turno tras fallar una consonante o caer en PIERDE TURNO.", color: "#e67e22" }
 ];
@@ -4591,6 +4591,14 @@ try {
     }
     localStorage.setItem("scbSuperRetoV1", "1");
   }
+} catch (e) {
+}
+try {
+  SEGMENTS.forEach((s) => {
+    if (s && s.hold === "keep" && s.detail === "Premio guardado: se usa cuando el jugador quiera, dentro de su turno.") {
+      s.detail = "Premio guardado: en su turno, el jugador pincha el tri\xE1ngulo y elige a otro jugador para quitarle todos sus puntos de la ronda y sus premios.";
+    }
+  });
 } catch (e) {
 }
 function saveWheelSegments() {
@@ -9628,11 +9636,11 @@ var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
     { label: "SIN\nDEBERES", prizeName: "Una tarde sin deberes", detail: "El equipo no lleva deberes hoy.", value: 500, color: "#8e44ad" },
     { label: "APLAUSO", prizeName: "Aplauso de la clase", detail: "Toda la clase aplaude al equipo.", value: 100, color: "#f0a202" },
     { label: "ELEGIR\nJUEGO", prizeName: "Elegir el juego del recreo", detail: "El equipo elige a qu\xE9 se juega en el pr\xF3ximo recreo.", value: 400, color: "#2f6fed" },
-    { label: "ME LO\nQUEDO", prizeName: "Me lo quedo", detail: "Premio guardado: se usa cuando el jugador quiera, dentro de su turno.", value: 300, color: "#0f766e", hold: "keep" },
+    { label: "ME LO\nQUEDO", prizeName: "Me lo quedo", detail: "Premio guardado: en su turno, el jugador pincha el tri\xE1ngulo y elige a otro jugador para quitarle todos sus puntos de la ronda y sus premios.", value: 300, color: "#0f766e", hold: "keep" },
     { label: "DOBLE\nLETRA", prizeName: "Doble letra", detail: "Permite elegir dos consonantes con los puntos que hayan salido en la ruleta.", value: 300, color: "#db2777", hold: "double" },
     { label: "COMOD\xCDN\nTAMARA", prizeName: "Comod\xEDn Tamara", detail: "Recupera el turno tras fallar una consonante o caer en PIERDE TURNO.", value: 300, color: "#e67e22", hold: "tamara" }
   ];
-  const HOLD_LABEL = { "": "Se entrega al momento (normal)", keep: "Me lo quedo (se guarda y se usa cuando quiera)", double: "Doble letra (se guarda: permite elegir dos consonantes)", tamara: "Comod\xEDn Tamara (se guarda: recupera el turno)" };
+  const HOLD_LABEL = { "": "Se entrega al momento (normal)", keep: "Me lo quedo (se guarda; en tu turno quitas a otro jugador sus puntos de la ronda y sus premios)", double: "Doble letra (se guarda: permite elegir dos consonantes)", tamara: "Comod\xEDn Tamara (se guarda: recupera el turno)" };
   const MIN_SEG = 8, MAX_SEG = 40;
   const DEFAULT_VALUE = { challenge: 1500, puzzle: 1200, wordsearch: 1500, faults: 1500, lucky: 2e3 };
   const ORIGINAL_STUDENTS = ["Alba", "Leo", "Antonia", "Carla", "Valeria", "Alejandra", "Samantha", "Julieta", "Emma", "Enzo", "Jaime", "Miguel", "Laia", "Izan", "Francisco", "Luc\xEDa", "Juanito", "Ana", "Julia", "Mar\xEDa", "Tom\xE1s", "Mart\xEDn"];
@@ -9831,14 +9839,90 @@ var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
     beep(980, 0.16);
     message("\u270C\uFE0F \xA1".concat(p.name, " usa DOBLE LETRA! Elige DOS consonantes: cada una vale ").concat(currentValue, " puntos por aparici\xF3n."), "good");
   }
+  let holdPickModal = null;
+  function holdPick(title, text, options, onPick) {
+    if (!holdPickModal) {
+      const st = document.createElement("style");
+      st.textContent = ".hold-targets{display:flex;flex-direction:column;gap:8px;margin:0 0 14px}" +
+        ".hold-box .hold-target{display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;text-align:left;background:#fff;color:#241a4a;border-left:10px solid var(--pc,#ffd54f);padding:10px 14px}" +
+        ".hold-box .hold-target b{font-size:18px}" +
+        ".hold-box .hold-target span{font-size:13px;font-weight:800;color:#5b4a99}" +
+        ".hold-box .hold-target:hover:not(:disabled){background:#ffe9a3}" +
+        ".hold-box .hold-target:disabled{opacity:.45;cursor:not-allowed}";
+      document.head.appendChild(st);
+      holdPickModal = document.createElement("div");
+      holdPickModal.className = "hold-modal";
+      holdPickModal.innerHTML = '<div class="hold-box"><h3></h3><p></p><div class="hold-targets"></div><div class="hold-btns"><button type="button" class="hold-no">Cancelar</button></div></div>';
+      document.body.appendChild(holdPickModal);
+    }
+    const q = (s) => holdPickModal.querySelector(s);
+    q("h3").textContent = title;
+    q("p").textContent = text;
+    const box = q(".hold-targets");
+    box.innerHTML = "";
+    const close = () => holdPickModal.classList.remove("show");
+    options.forEach((o) => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "hold-target";
+      b.disabled = !!o.disabled;
+      b.style.setProperty("--pc", o.color || "#ffd54f");
+      const nameEl = document.createElement("b");
+      nameEl.textContent = o.label;
+      const infoEl = document.createElement("span");
+      infoEl.textContent = o.detail;
+      b.appendChild(nameEl);
+      b.appendChild(infoEl);
+      b.onclick = () => {
+        close();
+        onPick(o.value);
+      };
+      box.appendChild(b);
+    });
+    q(".hold-no").onclick = close;
+    holdPickModal.classList.add("show");
+  }
+  function lootOf(q) {
+    return { pts: Number(q.round) || 0, prizes: (q.held || []).length + (q.prizes || []).length };
+  }
+  function lootText(l) {
+    const parts = [];
+    if (l.pts > 0) parts.push("+" + l.pts + " pts en la ronda");
+    if (l.prizes > 0) parts.push(l.prizes + (l.prizes === 1 ? " premio" : " premios"));
+    return parts.length ? parts.join(" \u00B7 ") : "no tiene nada que quitar";
+  }
   function useKeep(pi, h) {
     const p = players[pi];
-    removeHeld(p, h.id);
-    updatePlayerBar();
-    beep(880, 0.12);
-    const name = h.name || "Me lo quedo";
-    holdAsk("\u{1F381} " + p.name + " usa: " + name, h.detail || "La profe entrega el premio al equipo.", "\xA1Entendido!", null, null);
-    message("\u{1F381} ".concat(p.name, " ha usado su premio guardado: ").concat(name, "."), "good");
+    const others = players.map((q, i) => ({ q, i })).filter((x) => x.i !== pi);
+    if (!others.length) {
+      holdToast("Para usar \u00ABMe lo quedo\u00BB hace falta otro jugador al que quitarle sus puntos y premios.");
+      return;
+    }
+    const opts = others.map(({ q, i }) => {
+      const l = lootOf(q);
+      return { value: i, label: q.name, color: q.color, disabled: !(l.pts > 0 || l.prizes > 0), detail: lootText(l) };
+    });
+    if (opts.every((o) => o.disabled)) {
+      holdToast("Ahora mismo nadie tiene puntos de la ronda ni premios que quitar. Guarda tu tri\u00E1ngulo para m\u00E1s tarde.");
+      return;
+    }
+    holdPick("\u{1F381} Me lo quedo", p.name + ", \u00BFa qui\u00E9n le quitas todos sus puntos de la ronda y sus premios?", opts, (vi) => {
+      if (!holdUsable(pi, h)) return;
+      const v = players[vi];
+      const l = lootOf(v);
+      removeHeld(p, h.id);
+      v.round = 0;
+      v.held = [];
+      v.prizes = [];
+      updatePlayerBar();
+      updateControls();
+      beep(880, 0.12);
+      setTimeout(() => beep(520, 0.18, "sawtooth", 0.1), 120);
+      const lost = [];
+      if (l.pts > 0) lost.push(l.pts + " puntos");
+      if (l.prizes > 0) lost.push(l.prizes + (l.prizes === 1 ? " premio" : " premios"));
+      message("\u{1F381} \u00A1" + p.name + " usa ME LO QUEDO! " + v.name + " se queda sin nada en esta ronda: pierde " + lost.join(" y ") + ".", "good");
+    });
   }
   function holdUse(pi, id) {
     const p = players[pi], h = (p.held || []).find((x) => x.id === id);
@@ -9854,9 +9938,7 @@ var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
     else if (h.kind === "double") holdAsk("\u270C\uFE0F Doble letra", "".concat(p.name, ", \xBFusas Doble letra? Elegir\xE1s dos consonantes por ").concat(currentValue, " puntos cada aparici\xF3n."), "S\xED, usar", "No", () => {
       if (holdUsable(pi, h)) useDouble(pi, id);
     });
-    else holdAsk("\u{1F381} " + nm, "".concat(p.name, ", \xBFquieres usar ahora \xAB").concat(nm, "\xBB?"), "S\xED, usar", "No", () => {
-      if (holdUsable(pi, h)) useKeep(pi, h);
-    });
+    else useKeep(pi, h);
   }
   window.offerTamara = function(delay) {
     const ctx = lossCtx;
