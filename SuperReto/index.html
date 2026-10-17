@@ -30,7 +30,7 @@ canvas{width:100%;border-radius:14px;border:3px solid var(--ac);touch-action:non
 </div>
 <div id="game" hidden><canvas id="cv" width="1280" height="800"></canvas><div id="hint"></div><button id="bExit">✖ Salir</button></div>
 <div id="over" class="card" hidden><h2 id="oT"></h2><p id="oS" style="text-align:center;font-size:18px;line-height:1.6"></p>
-<button id="bAgain">🔄 Jugar otra vez</button><button class="sec" id="bMenu">🏠 Menú</button></div>
+<button id="bReturn" hidden></button><button id="bAgain">🔄 Jugar otra vez</button><button class="sec" id="bMenu">🏠 Menú</button></div>
 <div id="ed" class="card" hidden><h2>✏️ Añadir preguntas</h2>
 <label>Asignatura <select id="eSub"></select></label><input id="nSub" placeholder="Escribe el nombre de la nueva asignatura" hidden>
 <label>Tema <select id="eTop"></select></label><input id="nTop" placeholder="Escribe el nombre del nuevo tema" hidden>
@@ -319,7 +319,7 @@ function newRound(){const q=G.q=G.order[G.r%G.order.length],s=(q.speed||'n')[0];
 function res(ok){if(ok){G.combo++;G.maxC=Math.max(G.maxC,G.combo);G.score+=100*G.lvl;G.ok++;SFX.ok();G.fl=[.25,'#2ecc71']}else{G.lives--;G.combo=0;G.bad++;SFX.bad();G.fl=[.25,'#e74c3c'];if(G.lives<=0)finish(0)}}
 function endRound(){G.r++;G.items=[];if(G.r>=10)return finish(1);G.st='wait';G.pause=.9}
 function finish(w){if(G.over)return;G.over=1;SFX.over();setTimeout(()=>{if(!G)return;$('#oT').textContent=w?'🏆 ¡Lo has conseguido!':'💥 Game Over';
- $('#oS').innerHTML=`✅ Aciertos: <b>${G.ok}</b> &nbsp; ❌ Fallos: <b>${G.bad}</b><br>PTOS: <b>${G.score}</b><br>Rondas: ${Math.min(G.r+(w?0:1),10)}/10`;show('over')},900)}
+ $('#oS').innerHTML=`✅ Aciertos: <b>${G.ok}</b> &nbsp; ❌ Fallos: <b>${G.bad}</b><br>PTOS: <b>${G.score}</b><br>Rondas: ${Math.min(G.r+(w?0:1),10)}/10`;show('over');embedOver()},900)}
 function upd(dt){if(G.fl)G.fl[0]-=dt;
  if(G.pause>0){G.pause-=dt;if(G.pause<=0)newRound();return}
  const m=G.mode,sm=G.sm;
@@ -369,4 +369,16 @@ cv.addEventListener('pointerdown',e=>ptr(e,1));cv.addEventListener('pointermove'
 $('#bExit').onclick=()=>{G=null;show('menu')};$('#bMenu').onclick=()=>{G=null;show('menu')};$('#bAgain').onclick=()=>start(G.mode);
 let last=0;function loop(n){const dt=Math.min((n-last)/1000,.05);last=n;if(G){if(!G.over)upd(dt);if(G)draw()}requestAnimationFrame(loop)}
 refresh();requestAnimationFrame(n=>{last=n;loop(n)});
+
+/* ===== MODO INCRUSTADO (cuando se abre desde La Ruleta) ===== */
+const EMB=(window.parent!==window);
+if(EMB){const e=$('#bEd');if(e)e.hidden=true}
+function embedOver(){
+ if(!EMB||!G)return;
+ const pts=G.score,b=$('#bReturn');
+ b.hidden=false;b.textContent='✅ Volver con '+pts+' puntos';
+ try{window.parent.postMessage({type:'superreto-over'},'*')}catch(e){}
+ $('#bAgain').hidden=true;$('#bMenu').hidden=true;
+ b.onclick=()=>{b.disabled=true;window.parent.postMessage({type:'superreto-result',score:pts},'*')};
+}
 </script></body></html>

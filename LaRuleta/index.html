@@ -4101,6 +4101,53 @@ body.roulette-overlay-open .wheel-area {
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8E%A1%3C/text%3E%3C/svg%3E">
 </head>
 <body>
+<!-- ================= VÍDEO DE PRESENTACIÓN ================= -->
+<style id="intro-video-css">
+#introVideoOverlay{position:fixed;top:0;right:0;bottom:0;left:0;z-index:30000;background:#000;display:flex;align-items:center;justify-content:center;transition:opacity .5s}
+#introVideoOverlay.hidden{opacity:0;pointer-events:none}
+#introVideo{width:100%;height:100%;object-fit:contain;background:#000}
+#introVideoSkip,#introVideoSound{position:absolute;bottom:18px;padding:10px 18px;font:900 16px "Trebuchet MS",system-ui,sans-serif;color:#fff;background:rgba(0,0,0,.55);border:2px solid rgba(255,255,255,.7);border-radius:999px;cursor:pointer}
+#introVideoSkip{right:18px}
+#introVideoSound{left:18px;display:none}
+</style>
+<div id="introVideoOverlay">
+  <video id="introVideo" src="portadaRuleta.mp4" playsinline preload="auto"></video>
+  <button id="introVideoSound" type="button">🔊 Activar sonido</button>
+  <button id="introVideoSkip" type="button">Saltar ⏭</button>
+</div>
+<script>
+(function () {
+  var ov = document.getElementById("introVideoOverlay");
+  var v = document.getElementById("introVideo");
+  var skip = document.getElementById("introVideoSkip");
+  var snd = document.getElementById("introVideoSound");
+  var done = false, started = false;
+  function end() {
+    if (done) return;
+    done = true;
+    try { v.pause(); } catch (e) {}
+    ov.classList.add("hidden");
+    setTimeout(function () { if (ov.parentNode) ov.parentNode.removeChild(ov); }, 600);
+  }
+  v.addEventListener("ended", end);
+  v.addEventListener("error", end);
+  v.addEventListener("playing", function () { started = true; });
+  skip.addEventListener("click", end);
+  snd.addEventListener("click", function () { v.muted = false; snd.style.display = "none"; try { v.play(); } catch (e) {} });
+  function startMuted() {
+    v.muted = true;
+    var q = v.play();
+    if (q && q.catch) q.catch(end);
+    snd.style.display = "block";
+  }
+  try {
+    v.muted = false;
+    var p = v.play();
+    if (p && p.catch) p.catch(startMuted);
+  } catch (e) { startMuted(); }
+  setTimeout(function () { if (!started) end(); }, 6000);
+})();
+</script>
 
 <!-- ================= PORTADA ================= -->
 <div class="welcome-overlay" id="welcomeOverlay">
@@ -4117,6 +4164,7 @@ body.roulette-overlay-open .wheel-area {
       <div class="welcome-rule"><strong>🔤 Vocales:</strong> puedes comprar una vocal por 50 puntos. También puedes intentar resolver la frase completa; si aciertas, ganas 200 puntos extra.</div>
       <div class="welcome-rule"><strong>⚠️ Casillas especiales:</strong> <b>PIERDE TURNO</b> pasa el turno conservando tus puntos. <b>QUIEBRA</b> hace perder los puntos de la ronda y resta 200 del marcador total.</div>
       <div class="welcome-rule"><strong>🏆 Retos:</strong> si sale un reto, el equipo realiza la prueba. Si lo consigue, podrá elegir una consonante con 1500 puntos en juego; si no, pasa el turno.</div>
+      <div class="welcome-rule"><strong>🚀 Super Reto:</strong> si la ruleta cae en SUPER RETO, se abre un juego de preguntas. Los puntos que consigas ahí son los que usarás para elegir consonante; si sacas 0 puntos, pierdes el turno.</div>
       <div class="welcome-rule"><strong>🔄 ¿Cómo se gana?</strong> los jugadores se van turnando y acumulando puntos hasta que alguien resuelve correctamente la frase oculta.</div>
     </div>
     <button class="welcome-play" id="welcomePlayBtn">JUGAR</button>
@@ -4198,6 +4246,7 @@ body.roulette-overlay-open .wheel-area {
             <div class="game-guide-card"><b>RETO BAILA</b><span>Si el grupo entero baila durante 10 segundos: 1500 puntos para elegir consonante.</span></div>
             <div class="game-guide-card"><b>RETO PAPEL</b><span>Si un miembro del equipo gana a la profe a piedra, papel o tijera: 1500 puntos para elegir consonante.</span></div>
             <div class="game-guide-card"><b>RETO SENTADILLAS</b><span>Si todo el equipo hace 10 sentadillas: 1500 puntos para elegir consonante.</span></div>
+            <div class="game-guide-card"><b>SUPER RETO</b><span>Se abre el juego Super Reto a pantalla completa. Al terminar, el jugador pulsa «Volver con X puntos» y elige consonante con esos puntos. Si saca 0, pierde el turno.</span></div>
           </div>
         </div>
       </section>
@@ -4515,6 +4564,7 @@ const HOLD_WHEEL_SEGMENTS = [
   { label: "COMOD\xCDN\nTAMARA", type: "prize", hold: "tamara", value: 300, prizeName: "Comod\xEDn Tamara", detail: "Recupera el turno tras fallar una consonante o caer en PIERDE TURNO.", color: "#e67e22" }
 ];
 [[4, 0], [14, 1], [22, 2]].forEach(([pos, k]) => SEGMENTS.splice(Math.min(pos, SEGMENTS.length), 0, JSON.parse(JSON.stringify(HOLD_WHEEL_SEGMENTS[k]))));
+SEGMENTS.splice(10, 0, { label: "SUPER\nRETO", type: "superreto", color: "#00a8c6" });
 const DEFAULT_SEGMENTS_COPY = JSON.parse(JSON.stringify(SEGMENTS));
 try {
   const saved = JSON.parse(localStorage.getItem("scbWheelSegments") || "null");
@@ -4530,6 +4580,16 @@ try {
       localStorage.setItem("scbWheelSegments", JSON.stringify(SEGMENTS));
     }
     localStorage.setItem("scbHoldSegsV1", "1");
+  }
+} catch (e) {
+}
+try {
+  if (!localStorage.getItem("scbSuperRetoV1")) {
+    if (!SEGMENTS.some((s) => s && s.type === "superreto") && SEGMENTS.length < 40) {
+      SEGMENTS.splice(Math.min(10, SEGMENTS.length), 0, { label: "SUPER\nRETO", type: "superreto", color: "#00a8c6" });
+      localStorage.setItem("scbWheelSegments", JSON.stringify(SEGMENTS));
+    }
+    localStorage.setItem("scbSuperRetoV1", "1");
   }
 } catch (e) {
 }
@@ -9556,7 +9616,7 @@ var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
   "use strict";
   const $ = (id) => document.getElementById(id);
   const esc = (v) => String(v == null ? "" : v).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
-  const TYPES = [["prize", "Premio"], ["pts", "Puntos"], ["challenge", "Reto"], ["lose", "Pierde turno"], ["bankrupt", "Quiebra"], ["puzzle", "Puzzle"], ["wordsearch", "Sopa de letras"], ["faults", "Encuentra fallos"], ["lucky", "Alumno suertudo"]];
+  const TYPES = [["prize", "Premio"], ["pts", "Puntos"], ["challenge", "Reto"], ["lose", "Pierde turno"], ["bankrupt", "Quiebra"], ["puzzle", "Puzzle"], ["wordsearch", "Sopa de letras"], ["faults", "Encuentra fallos"], ["lucky", "Alumno suertudo"], ["superreto", "Super Reto"]];
   const TYPE_LABEL = {};
   TYPES.forEach((t) => {
     TYPE_LABEL[t[0]] = t[1];
@@ -10569,6 +10629,89 @@ var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", placeTeacherBtn);
   else placeTeacherBtn();
   init();
+})();
+</script>
+<style id="superreto-css">
+#superRetoOverlay{position:fixed;top:0;right:0;bottom:0;left:0;z-index:20000;background:#10162b;display:none}
+#superRetoOverlay.show{display:block}
+#superRetoFrame{position:absolute;top:0;left:0;width:100%;height:100%;border:0;background:#10162b}
+#superRetoExit{position:absolute;top:6px;right:6px;z-index:2;padding:5px 10px;font:700 12px system-ui,sans-serif;color:#fff;background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.6);border-radius:999px;cursor:pointer;opacity:.75}
+#superRetoExit:hover{opacity:1}
+</style>
+<script id="superreto-js">
+(function () {
+  var URL_SUPERRETO = "../SuperReto/index.html";
+  var ov = document.createElement("div");
+  ov.id = "superRetoOverlay";
+  ov.innerHTML = '<iframe id="superRetoFrame" title="Super Reto"></iframe><button id="superRetoExit" type="button">✕ Salir (0 puntos)</button>';
+  document.body.appendChild(ov);
+  var frame = document.getElementById("superRetoFrame");
+  var isOpen = false;
+
+  function openSuperReto() {
+    frame.src = URL_SUPERRETO;
+    document.getElementById("superRetoExit").style.display = "";
+    ov.classList.add("show");
+    isOpen = true;
+  }
+  function closeSuperReto() {
+    ov.classList.remove("show");
+    frame.src = "about:blank";
+    isOpen = false;
+  }
+  function applyResult(score) {
+    closeSuperReto();
+    score = Math.max(0, Math.round(Number(score) || 0));
+    var name = cp().name;
+    if (score > 0) {
+      currentValue = score;
+      consonantRequired = true;
+      phase = "pick";
+      updateControls();
+      beep(980, 0.16);
+      message("🚀 ¡SUPER RETO! " + name + " juega con " + score + " puntos. Elige una consonante: si aparece en la frase, ganarás " + score + " puntos por cada aparición.", "good");
+    } else {
+      currentValue = 0;
+      consonantRequired = false;
+      updatePlayerBar();
+      beep(180, 0.35, "sawtooth", 0.15);
+      lossCtx = { from: currentPlayerIdx };
+      passTurn();
+      lossCtx.to = currentPlayerIdx;
+      phase = "spin";
+      updateControls();
+      if (window.offerTamara) window.offerTamara(2400);
+      message("😅 " + name + " ha sacado 0 puntos en el SUPER RETO y pierde el turno. Ahora le toca a " + cp().name + ".", "bad");
+    }
+  }
+
+  window.addEventListener("message", function (e) {
+    if (!isOpen || e.source !== frame.contentWindow) return;
+    var d = e.data;
+    if (d && d.type === "superreto-over") document.getElementById("superRetoExit").style.display = "none";
+    if (d && d.type === "superreto-result") applyResult(d.score);
+  });
+  document.getElementById("superRetoExit").addEventListener("click", function () {
+    if (confirm("¿Salir del Super Reto? Se consigue 0 puntos y se pierde el turno.")) applyResult(0);
+  });
+
+  var _finishSpin = window.finishSpin;
+  window.finishSpin = function () {
+    var idx, seg;
+    try { idx = segIndexAt(rotation); seg = SEGMENTS[idx]; } catch (e) {}
+    if (seg && seg.type === "superreto") {
+      window.__activeSeg = seg;
+      spinning = false;
+      startWheelHighlight(idx);
+      currentValue = 0;
+      consonantRequired = false;
+      phase = "busy";
+      message("🚀 ¡" + cp().name + " ha caído en SUPER RETO!", "good");
+      setTimeout(function () { closeRouletteOverlay(); openSuperReto(); }, 1200);
+      return;
+    }
+    return _finishSpin.apply(this, arguments);
+  };
 })();
 </script>
 </body>
