@@ -4250,6 +4250,11 @@ body.roulette-overlay-open .wheel-area {
           </div>
         </div>
       </section>
+      <section class="admin-section admin-section-full" id="adminTestPlay" style="display:block;margin:0 0 16px;padding:14px 16px;border:2px solid #34d399;border-radius:16px;background:rgba(20,16,55,.96);">
+        <h3 style="margin:0 0 6px;color:#fff;">🧪 Modo prueba</h3>
+        <p class="admin-note" style="margin:0 0 10px;">Se juega una partida normal, pero la ruleta no gira: al pulsar GIRAR aparece quieta y tú pulsas la casilla donde quieres que caiga. Sirve para comprobar que todas las casillas funcionan.</p>
+        <button type="button" class="admin-primary" id="adminTestPlayBtn" style="width:100%;min-height:52px;font-size:18px;font-weight:900;">🧪 JugarPrueba</button>
+      </section>
       <nav id="adminFeatureTabs" style="display:flex;gap:8px;flex-wrap:wrap;margin:0 0 16px;">
         <button type="button" class="admin-secondary" data-admin-tab="wheel">🎡 Premios y ruleta</button>
         <button type="button" class="admin-secondary" data-admin-tab="phrases">📚 Asignaturas y frases</button>
@@ -10794,6 +10799,154 @@ var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
     }
     return _finishSpin.apply(this, arguments);
   };
+})();
+</script>
+<style id="testmode-css">
+#testBadge{position:fixed;left:8px;bottom:46px;z-index:9400;display:none;align-items:center;gap:8px;padding:5px 6px 5px 12px;background:#065f46;color:#fff;border:2px solid #34d399;border-radius:999px;font:900 12px "Trebuchet MS",system-ui,sans-serif;box-shadow:0 4px 12px rgba(0,0,0,.45)}
+#testBadge.show{display:flex}
+#testBadge button{padding:4px 10px;border:0;border-radius:999px;background:#fff;color:#065f46;font:900 12px "Trebuchet MS",system-ui,sans-serif;cursor:pointer}
+#testPickBanner{position:fixed;top:50%;left:10px;transform:translateY(-50%);width:calc((100vw - min(92vw,92vh)) / 2 - 20px);min-width:140px;max-width:260px;box-sizing:border-box;z-index:9500;display:none;flex-direction:column;align-items:center;gap:6px;padding:10px 12px;background:#065f46;color:#fff;border:3px solid #34d399;border-radius:18px;text-align:center;font:900 15px "Trebuchet MS",system-ui,sans-serif;box-shadow:0 8px 24px rgba(0,0,0,.55)}
+@media (orientation:portrait){#testPickBanner{top:10px;left:50%;transform:translateX(-50%);width:auto;min-width:0;max-width:94vw}}
+#testPickBanner.show{display:flex}
+#testPickBanner .tp-hover{font-size:18px;color:#ffe066;min-height:22px}
+#testPickBanner button{padding:6px 14px;border:0;border-radius:999px;background:#fff;color:#065f46;font:900 13px "Trebuchet MS",system-ui,sans-serif;cursor:pointer}
+body.test-picking #wheel{cursor:pointer;pointer-events:auto!important}
+</style>
+<div id="testBadge">🧪 MODO PRUEBA <button type="button" id="testBadgeExit">Salir</button></div>
+<div id="testPickBanner"><div>🧪 Pulsa la casilla donde quieres que caiga la ruleta</div><div class="tp-hover" id="testPickHover"></div><button type="button" id="testPickCancel">✕ Cancelar tirada</button></div>
+<script id="testmode-js">
+(function () {
+  var testMode = false, picking = false, hoverIdx = -1;
+  var badge = document.getElementById("testBadge");
+  var banner = document.getElementById("testPickBanner");
+  var hoverEl = document.getElementById("testPickHover");
+
+  function setTestMode(on) {
+    testMode = !!on;
+    badge.classList.toggle("show", testMode);
+    if (!testMode) {
+      stopPicking();
+      rotation = 0;
+      canvas.style.transform = "rotate(0deg)";
+    }
+  }
+  function stopPicking() {
+    picking = false;
+    hoverIdx = -1;
+    banner.classList.remove("show");
+    document.body.classList.remove("test-picking");
+    hoverEl.textContent = "";
+  }
+  function startTestGame() {
+    if (document.body.classList.contains("game-active") &&
+        !confirm("¿Empezar una partida de prueba? Se cerrará la partida actual.")) return;
+    stopPicking();
+    spinning = false;
+    closeRouletteOverlay();
+    closeAdminPanel();
+    resetGame();
+    welcomePlayBtn.click();
+    setTestMode(true);
+  }
+  document.getElementById("adminTestPlayBtn").addEventListener("click", startTestGame);
+
+  // Un clic real en JUGAR (portada) vuelve al modo normal; el clic programático de arriba no.
+  welcomePlayBtn.addEventListener("click", function (e) {
+    if (e.isTrusted) setTestMode(false);
+  }, true);
+  document.getElementById("testBadgeExit").addEventListener("click", function () {
+    setTestMode(false);
+    spinning = false;
+    closeRouletteOverlay();
+    resetGame();
+  });
+
+  // En modo prueba, GIRAR no gira: deja la ruleta quieta y espera a que se pulse una casilla.
+  document.addEventListener("click", function (e) {
+    if (!testMode) return;
+    var t = e.target;
+    if (!(t && t.closest && t.closest("#spinBtn"))) return;
+    e.stopImmediatePropagation();
+    e.preventDefault();
+    testSpin();
+  }, true);
+
+  function testSpin() {
+    if (spinning) return;
+    clearWheelHighlight();
+    applyCharacter();
+    resetHostPosition();
+    if (phase !== "spin" || consonantRequired) return;
+    if (!hasAvailableConsonants()) {
+      updateControls();
+      message("No hay más consonantes disponibles. Debes resolver la frase.", "bad");
+      return;
+    }
+    spinning = true;
+    lossCtx = null;
+    phase = "busy";
+    rotation = 0;
+    canvas.style.transform = "rotate(0deg)";
+    document.body.classList.add("roulette-overlay-open");
+    document.body.classList.add("test-picking");
+    updateControls();
+    drawWheel(-1);
+    picking = true;
+    banner.classList.add("show");
+    message("🧪 PRUEBA: " + cp().name + ", pulsa la casilla donde quieres que caiga la ruleta.", "info");
+  }
+
+  function idxFromEvent(e) {
+    var rect = canvas.getBoundingClientRect();
+    var dx = e.clientX - (rect.left + rect.width / 2);
+    var dy = e.clientY - (rect.top + rect.height / 2);
+    var dist = Math.sqrt(dx * dx + dy * dy);
+    var radius = rect.width / 2 * ((canvas.width / 2 - 8) / (canvas.width / 2));
+    if (dist > radius || dist < rect.width * 0.09) return -1;
+    var ang = Math.atan2(dy, dx) * 180 / Math.PI;
+    if (ang < 0) ang += 360;
+    return Math.floor(ang / (360 / SEGMENTS.length)) % SEGMENTS.length;
+  }
+
+  canvas.addEventListener("mousemove", function (e) {
+    if (!picking) return;
+    var idx = idxFromEvent(e);
+    if (idx === hoverIdx) return;
+    hoverIdx = idx;
+    drawWheel(idx);
+    hoverEl.textContent = idx >= 0 ? "👉 " + SEGMENTS[idx].label.replace(/\n/g, " ") : "";
+  });
+  canvas.addEventListener("mouseleave", function () {
+    if (!picking) return;
+    hoverIdx = -1;
+    drawWheel(-1);
+    hoverEl.textContent = "";
+  });
+  canvas.addEventListener("click", function (e) {
+    if (!picking) return;
+    var idx = idxFromEvent(e);
+    if (idx < 0) return;
+    stopPicking();
+    var segA = 360 / SEGMENTS.length;
+    // Valor interno de "rotation" que hace que la casilla pulsada sea la ganadora (la ruleta dibujada no se mueve).
+    var rot = (((270 - (idx + 0.5) * segA) % 360) + 360) % 360;
+    if (segIndexAt(rot) !== idx) {
+      for (var d = 0; d < 360; d += 0.05) { if (segIndexAt(d) === idx) { rot = d; break; } }
+    }
+    rotation = rot;
+    finishSpin();
+  });
+
+  document.getElementById("testPickCancel").addEventListener("click", function () {
+    if (!picking) return;
+    stopPicking();
+    spinning = false;
+    phase = "spin";
+    closeRouletteOverlay();
+    drawWheel(-1);
+    updateControls();
+    message("🧪 Tirada cancelada. Pulsa GIRAR cuando quieras.", "info");
+  });
 })();
 </script>
 </body>
