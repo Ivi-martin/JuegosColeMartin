@@ -4564,7 +4564,7 @@ const SPECIAL_WHEEL_GAMES = [
   SEGMENTS.splice(position, 0, SPECIAL_WHEEL_GAMES[i]);
 });
 const HOLD_WHEEL_SEGMENTS = [
-  { label: "ME LO\nQUEDO", type: "prize", hold: "keep", value: 300, prizeName: "Me lo quedo", detail: "Premio guardado: en su turno, el jugador pincha el tri\xE1ngulo y elige a otro jugador para quitarle todos sus puntos de la ronda y sus premios.", color: "#0f766e" },
+  { label: "ME LO\nQUEDO", type: "prize", hold: "keep", value: 300, prizeName: "Me lo quedo", detail: "Premio guardado: en su turno, el jugador pincha el tri\xE1ngulo y elige a otro jugador: le quita sus puntos de la ronda (que se suman a los suyos) y sus premios.", color: "#0f766e" },
   { label: "DOBLE\nLETRA", type: "prize", hold: "double", value: 300, prizeName: "Doble letra", detail: "Permite elegir dos consonantes con los puntos que hayan salido en la ruleta.", color: "#db2777" },
   { label: "COMOD\xCDN\nTAMARA", type: "prize", hold: "tamara", value: 300, prizeName: "Comod\xEDn Tamara", detail: "Recupera el turno tras fallar una consonante o caer en PIERDE TURNO.", color: "#e67e22" }
 ];
@@ -4600,8 +4600,8 @@ try {
 }
 try {
   SEGMENTS.forEach((s) => {
-    if (s && s.hold === "keep" && s.detail === "Premio guardado: se usa cuando el jugador quiera, dentro de su turno.") {
-      s.detail = "Premio guardado: en su turno, el jugador pincha el tri\xE1ngulo y elige a otro jugador para quitarle todos sus puntos de la ronda y sus premios.";
+    if (s && s.hold === "keep" && (s.detail === "Premio guardado: se usa cuando el jugador quiera, dentro de su turno." || s.detail === "Premio guardado: en su turno, el jugador pincha el tri\xE1ngulo y elige a otro jugador para quitarle todos sus puntos de la ronda y sus premios.")) {
+      s.detail = "Premio guardado: en su turno, el jugador pincha el tri\xE1ngulo y elige a otro jugador: le quita sus puntos de la ronda (que se suman a los suyos) y sus premios.";
     }
   });
 } catch (e) {
@@ -9641,11 +9641,11 @@ var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
     { label: "SIN\nDEBERES", prizeName: "Una tarde sin deberes", detail: "El equipo no lleva deberes hoy.", value: 500, color: "#8e44ad" },
     { label: "APLAUSO", prizeName: "Aplauso de la clase", detail: "Toda la clase aplaude al equipo.", value: 100, color: "#f0a202" },
     { label: "ELEGIR\nJUEGO", prizeName: "Elegir el juego del recreo", detail: "El equipo elige a qu\xE9 se juega en el pr\xF3ximo recreo.", value: 400, color: "#2f6fed" },
-    { label: "ME LO\nQUEDO", prizeName: "Me lo quedo", detail: "Premio guardado: en su turno, el jugador pincha el tri\xE1ngulo y elige a otro jugador para quitarle todos sus puntos de la ronda y sus premios.", value: 300, color: "#0f766e", hold: "keep" },
+    { label: "ME LO\nQUEDO", prizeName: "Me lo quedo", detail: "Premio guardado: en su turno, el jugador pincha el tri\xE1ngulo y elige a otro jugador: le quita sus puntos de la ronda (que se suman a los suyos) y sus premios.", value: 300, color: "#0f766e", hold: "keep" },
     { label: "DOBLE\nLETRA", prizeName: "Doble letra", detail: "Permite elegir dos consonantes con los puntos que hayan salido en la ruleta.", value: 300, color: "#db2777", hold: "double" },
     { label: "COMOD\xCDN\nTAMARA", prizeName: "Comod\xEDn Tamara", detail: "Recupera el turno tras fallar una consonante o caer en PIERDE TURNO.", value: 300, color: "#e67e22", hold: "tamara" }
   ];
-  const HOLD_LABEL = { "": "Se entrega al momento (normal)", keep: "Me lo quedo (se guarda; en tu turno quitas a otro jugador sus puntos de la ronda y sus premios)", double: "Doble letra (se guarda: permite elegir dos consonantes)", tamara: "Comod\xEDn Tamara (se guarda: recupera el turno)" };
+  const HOLD_LABEL = { "": "Se entrega al momento (normal)", keep: "Me lo quedo (se guarda; en tu turno quitas a otro jugador sus puntos de la ronda, que se suman a los tuyos, y sus premios)", double: "Doble letra (se guarda: permite elegir dos consonantes)", tamara: "Comod\xEDn Tamara (se guarda: recupera el turno)" };
   const MIN_SEG = 8, MAX_SEG = 40;
   const DEFAULT_VALUE = { challenge: 1500, puzzle: 1200, wordsearch: 1500, faults: 1500, lucky: 2e3 };
   const ORIGINAL_STUDENTS = ["Alba", "Leo", "Antonia", "Carla", "Valeria", "Alejandra", "Samantha", "Julieta", "Emma", "Enzo", "Jaime", "Miguel", "Laia", "Izan", "Francisco", "Luc\xEDa", "Juanito", "Ana", "Julia", "Mar\xEDa", "Tom\xE1s", "Mart\xEDn"];
@@ -9911,7 +9911,7 @@ var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
       holdToast("Ahora mismo nadie tiene puntos de la ronda ni premios que quitar. Guarda tu tri\u00E1ngulo para m\u00E1s tarde.");
       return;
     }
-    holdPick("\u{1F381} Me lo quedo", p.name + ", \u00BFa qui\u00E9n le quitas todos sus puntos de la ronda y sus premios?", opts, (vi) => {
+    holdPick("\u{1F381} Me lo quedo", p.name + ", \u00BFa qui\u00E9n le quitas todo? Sus puntos de la ronda se suman a los tuyos y pierde sus premios.", opts, (vi) => {
       if (!holdUsable(pi, h)) return;
       const v = players[vi];
       const l = lootOf(v);
@@ -9919,14 +9919,14 @@ var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
       v.round = 0;
       v.held = [];
       v.prizes = [];
+      p.round = (Number(p.round) || 0) + l.pts;
       updatePlayerBar();
       updateControls();
       beep(880, 0.12);
       setTimeout(() => beep(520, 0.18, "sawtooth", 0.1), 120);
       const lost = [];
-      if (l.pts > 0) lost.push(l.pts + " puntos");
       if (l.prizes > 0) lost.push(l.prizes + (l.prizes === 1 ? " premio" : " premios"));
-      message("\u{1F381} \u00A1" + p.name + " usa ME LO QUEDO! " + v.name + " se queda sin nada en esta ronda: pierde " + lost.join(" y ") + ".", "good");
+      message("\u{1F381} \u00A1" + p.name + " usa ME LO QUEDO! Se lleva " + l.pts + " puntos de " + v.name + " (ahora tiene " + p.round + " en la ronda)." + (lost.length ? " " + v.name + " tambi\u00E9n pierde " + lost.join(" y ") + "." : "") + " " + v.name + " se queda sin nada en esta ronda.", "good");
     });
   }
   function holdUse(pi, id) {
