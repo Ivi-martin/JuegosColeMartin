@@ -15,8 +15,9 @@ select,input,textarea{width:100%;box-sizing:border-box;font-size:16px;padding:8p
 button{font-size:17px;font-weight:bold;padding:12px;margin:5px 0;border:0;border-radius:12px;background:var(--ac);color:#fff;cursor:pointer;width:100%}
 button.sec{background:#5b6bd6}button.mini{width:auto;padding:8px 12px;font-size:14px;margin:3px}
 .row{display:flex;gap:8px}.row>*{flex:1}
-#game{width:min(100%,calc((100vh - 120px) * 1.6));max-width:1500px;text-align:center}
+#game{width:min(100%,calc((100vh - 200px) * 1.6));max-width:1500px;text-align:center}
 canvas{width:100%;border-radius:14px;border:3px solid var(--ac);touch-action:none;background:#000}
+#pad{display:flex;gap:12px;margin-top:8px}#pad button{flex:1;margin:0;padding:14px 0;font-size:34px;line-height:1;border-radius:16px;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}#pad button:active,#pad button.on{filter:brightness(.8);transform:scale(.97)}
 #hint{font-size:14px;padding:6px}#bExit{width:auto;padding:8px 16px;font-size:14px;background:#888}
 #msg{font-size:14px;min-height:18px;margin:6px 0}.qi{display:flex;justify-content:space-between;align-items:center;gap:8px;border-bottom:1px solid var(--bd);padding:4px 0;font-size:14px}.del{background:#c0392b}details{margin:12px 0}
 #tabs{margin:8px 0}#tabs b{display:block;margin-bottom:6px}.tg{display:grid;grid-template-columns:repeat(auto-fill,minmax(54px,1fr));gap:6px}
@@ -34,7 +35,7 @@ canvas{width:100%;border-radius:14px;border:3px solid var(--ac);touch-action:non
 <button data-m="1">▶ ¡JUGAR! Lluvia de respuestas</button>
 <button class="sec" id="bEd">⚙️ Editor de temarios</button>
 </div>
-<div id="game" hidden><canvas id="cv" width="1280" height="800"></canvas><div id="hint"></div><button id="bExit">✖ Salir</button></div>
+<div id="game" hidden><canvas id="cv" width="1280" height="800"></canvas><div id="pad"><button id="bL" aria-label="Izquierda">◀</button><button id="bR" aria-label="Derecha">▶</button></div><div id="hint"></div><button id="bExit">✖ Salir</button></div>
 <div id="over" class="card" hidden><h2 id="oT"></h2><p id="oS" style="text-align:center;font-size:18px;line-height:1.6"></p>
 <button id="bAgain">🔄 Jugar otra vez</button><button class="sec" id="bMenu">🏠 Menú</button></div>
 <div id="ed" class="card" hidden><h2>✏️ Añadir preguntas</h2>
@@ -367,6 +368,8 @@ function ptr(e,d){if(!G||G.over)return;const r=cv.getBoundingClientRect(),x=(e.c
  if(G.mode==3&&d){if(y<H/2)jump();else keys.ArrowDown=1}}
 cv.addEventListener('pointerdown',e=>ptr(e,1));cv.addEventListener('pointermove',e=>{if(e.buttons||e.pointerType=='mouse')ptr(e,0)});
 ['pointerup','pointercancel'].forEach(n=>addEventListener(n,()=>keys.ArrowDown=0));
+[['#bL','ArrowLeft'],['#bR','ArrowRight']].forEach(([id,k])=>{const b=$(id),on=e=>{e.preventDefault();if(!G||G.over)return;keys[k]=1;b.classList.add('on');if(G.mode==2)G.lane=Math.max(0,Math.min(2,G.lane+(k=='ArrowLeft'?-1:1)))},off=()=>{keys[k]=0;b.classList.remove('on')};
+ b.addEventListener('pointerdown',on);['pointerup','pointercancel','pointerleave'].forEach(n=>b.addEventListener(n,off));b.addEventListener('contextmenu',e=>e.preventDefault())});
 $('#bExit').onclick=()=>{G=null;show('menu')};$('#bMenu').onclick=()=>{G=null;show('menu')};$('#bAgain').onclick=()=>start(G.mode);
 let last=0;function loop(n){const dt=Math.min((n-last)/1000,.05);last=n;if(G){if(!G.over)upd(dt);if(G)draw()}requestAnimationFrame(loop)}
 refresh();requestAnimationFrame(n=>{last=n;loop(n)});
