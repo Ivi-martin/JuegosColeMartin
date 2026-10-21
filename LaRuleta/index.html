@@ -5454,6 +5454,10 @@ function markFault(i, b) {
   } else {
     b.classList.add("wrong");
     setTimeout(() => b.classList.remove("wrong"), 450);
+    specialGame.remaining = Math.max(0, specialGame.remaining - 5);
+    setSpecialTimer(specialGame.remaining);
+    document.getElementById("specialStatus").textContent = "\u274C Esa palabra est\xE1 bien escrita: \u22125 segundos. Encontrados: ".concat(specialGame.found, "/").concat(total);
+    if (specialGame.remaining <= 0) faultTimeUp();
   }
 }
 function showFaultExplanations() {
@@ -6254,7 +6258,9 @@ async function pickConsonant(L, btn) {
   const count = tiles.filter((t) => t.letter === L).length;
   if (count > 0) {
     await revealLetterAnimated(L);
-    const gain = currentValue * count;
+    const prizeOnly = !!pendingHold;
+    const gain = prizeOnly ? 0 : currentValue * count;
+    const gainTxt = prizeOnly ? "No ganas puntos, solo el premio." : "\xA1Ganas ".concat(gain, " puntos!");
     cp().round += gain;
     updatePlayerBar();
     beep(880, 0.1);
@@ -6270,7 +6276,7 @@ async function pickConsonant(L, btn) {
       if (doubleLeft > 0 && hasAvailableConsonants()) {
         phase = "pick";
         updateControls();
-        message(" \xA1Bien ".concat(cp().name, "! Hay ").concat(count, ' "').concat(L, '"').concat(count > 1 ? "s" : "", ". \xA1Ganas ").concat(gain, " puntos! DOBLE LETRA: elige ahora la segunda consonante por ").concat(currentValue, " puntos.") + holdMsg, "good");
+        message(" \xA1Bien ".concat(cp().name, "! Hay ").concat(count, ' "').concat(L, '"').concat(count > 1 ? "s" : "", ". ").concat(gainTxt, " DOBLE LETRA: elige ahora la segunda consonante por ").concat(currentValue, " puntos.") + holdMsg, "good");
         return;
       }
     }
@@ -6283,10 +6289,10 @@ async function pickConsonant(L, btn) {
     const moreConsonants = hasAvailableConsonants();
     if (!moreConsonants) {
       spinBtn.disabled = true;
-      message(" \xA1Bien ".concat(cp().name, "! Hay ").concat(count, ' "').concat(L, '"').concat(count > 1 ? "s" : "", ". \xA1Ganas ").concat(gain, " puntos! Ya no quedan m\xE1s consonantes: debes resolver la frase."), "good");
+      message(" \xA1Bien ".concat(cp().name, "! Hay ").concat(count, ' "').concat(L, '"').concat(count > 1 ? "s" : "", ". ").concat(gainTxt, " Ya no quedan m\xE1s consonantes: debes resolver la frase."), "good");
     } else {
       const extra = canBuy ? " Puedes comprar vocales, resolver o girar otra vez." : " Puedes resolver o girar otra vez.";
-      message(" \xA1Bien ".concat(cp().name, "! Hay ").concat(count, ' "').concat(L, '"').concat(count > 1 ? "s" : "", ". \xA1Ganas ").concat(gain, " puntos! Ahora tienes ").concat(cp().round, " pts.").concat(extra), "good");
+      message(" \xA1Bien ".concat(cp().name, "! Hay ").concat(count, ' "').concat(L, '"').concat(count > 1 ? "s" : "", ". ").concat(gainTxt, " Ahora tienes ").concat(cp().round, " pts.").concat(extra), "good");
     }
     if (holdMsg) msgEl.textContent += holdMsg;
   } else {
@@ -9960,7 +9966,12 @@ var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
   };
   window.grantHold = function(ph) {
     const p = cp();
-    (p.held = p.held || []).push({ id: "h" + ++holdSeq + Date.now().toString(36), kind: ph.kind, name: ph.name, detail: ph.detail });
+    p.held = p.held || [];
+    if (p.held.some((x) => x.kind === ph.kind)) {
+      beep(300, 0.12);
+      return "\u26A0\uFE0F ".concat(p.name, " ya tiene \u00AB").concat(ph.name, "\u00BB guardado y no se puede tener repetido, as\u00ED que no recibe otro.");
+    }
+    p.held.push({ id: "h" + ++holdSeq + Date.now().toString(36), kind: ph.kind, name: ph.name, detail: ph.detail });
     updatePlayerBar();
     beep(1046, 0.14);
     return "\u{1F381} \xA1".concat(p.name, " se guarda \xAB").concat(ph.name, "\xBB! Lo tiene bajo su tarjeta y lo usar\xE1 cuando quiera, dentro de su turno.");
@@ -9975,7 +9986,7 @@ var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
       consonantRequired = true;
       phase = "pick";
       updateControls();
-      message("\u{1F381} ".concat(playerName, " ha ca\xEDdo en \xAB").concat(name, "\xBB (premio que se guarda) y ").concat(v, " puntos. Elige una consonante: si est\xE1 en la frase, ganas los puntos y te quedas el premio."), "good");
+      message("\u{1F381} ".concat(playerName, " ha ca\xEDdo en \xAB").concat(name, "\xBB (premio que se guarda). Elige una consonante: si est\xE1 en la frase, te quedas el premio (sin puntos)."), "good");
     } else {
       currentValue = 0;
       consonantRequired = false;
