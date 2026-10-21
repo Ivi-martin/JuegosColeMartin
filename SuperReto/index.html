@@ -18,19 +18,24 @@ button.sec{background:#5b6bd6}button.mini{width:auto;padding:8px 12px;font-size:
 #game{width:min(100%,calc((100vh - 120px) * 1.6));max-width:1500px;text-align:center}
 canvas{width:100%;border-radius:14px;border:3px solid var(--ac);touch-action:none;background:#000}
 #hint{font-size:14px;padding:6px}#bExit{width:auto;padding:8px 16px;font-size:14px;background:#888}
-#msg{font-size:14px;min-height:18px;margin:6px 0}.qi{display:flex;justify-content:space-between;align-items:center;gap:8px;border-bottom:1px solid var(--bd);padding:4px 0;font-size:14px}.del{background:#c0392b}details{margin:12px 0}summary{cursor:pointer;font-weight:bold}
+#msg{font-size:14px;min-height:18px;margin:6px 0}.qi{display:flex;justify-content:space-between;align-items:center;gap:8px;border-bottom:1px solid var(--bd);padding:4px 0;font-size:14px}.del{background:#c0392b}details{margin:12px 0}
+#tabs{margin:8px 0}#tabs b{display:block;margin-bottom:6px}.tg{display:grid;grid-template-columns:repeat(auto-fill,minmax(54px,1fr));gap:6px}
+.chip{width:auto;margin:0;padding:10px 0;font-size:18px;background:var(--bg);color:var(--fg);border:2px solid var(--bd)}.chip.on{background:var(--ac);color:#fff;border-color:var(--ac)}
+.tq{display:flex;gap:8px}.tq button{margin-top:8px}summary{cursor:pointer;font-weight:bold}
 </style></head><body>
 <div id="menu" class="card">
 <h1>🎓 Super Reto</h1>
 <label>Asignatura <select id="sSub"></select></label>
 <label>Tema <select id="sTop"></select></label>
+<div id="tabs" hidden><b>✖️ Elige las tablas que quieres practicar</b><div class="tg" id="tg"></div>
+<div class="tq"><button class="mini sec" id="tAll" style="flex:1">✅ Todas</button><button class="mini sec" id="tNone" style="flex:1">⬜ Ninguna</button></div></div>
 <label>Nivel <select id="sLvl"><option value="1">Nivel 1 · 100 puntos</option><option value="2">Nivel 2 · 200 puntos (más rápido)</option><option value="3">Nivel 3 · 300 puntos (muy rápido)</option></select></label>
 <button data-m="1">▶ ¡JUGAR! Lluvia de respuestas</button>
 <button class="sec" id="bEd">⚙️ Editor de temarios</button>
 </div>
 <div id="game" hidden><canvas id="cv" width="1280" height="800"></canvas><div id="hint"></div><button id="bExit">✖ Salir</button></div>
 <div id="over" class="card" hidden><h2 id="oT"></h2><p id="oS" style="text-align:center;font-size:18px;line-height:1.6"></p>
-<button id="bReturn" hidden></button><button id="bAgain">🔄 Jugar otra vez</button><button class="sec" id="bMenu">🏠 Menú</button></div>
+<button id="bAgain">🔄 Jugar otra vez</button><button class="sec" id="bMenu">🏠 Menú</button></div>
 <div id="ed" class="card" hidden><h2>✏️ Añadir preguntas</h2>
 <label>Asignatura <select id="eSub"></select></label><input id="nSub" placeholder="Escribe el nombre de la nueva asignatura" hidden>
 <label>Tema <select id="eTop"></select></label><input id="nTop" placeholder="Escribe el nombre del nuevo tema" hidden>
@@ -120,26 +125,6 @@ const DEF={subjects:[
  {"prompt":"Tengo 80 € y gasto 45 €. ¿Cuánto me queda?","correct":["35"],"incorrect":["25","45","125","34"],"readingTime":4,"speed":"normal"}
 ]},
 {name:"Tablas de multiplicar",questions:[
- {"prompt":"¿Cuánto es 2 × 8?","correct":["16"],"incorrect":["18","14","24","8"],"readingTime":3,"speed":"normal"},
- {"prompt":"¿Cuánto es 3 × 6?","correct":["18"],"incorrect":["21","15","24","12"],"readingTime":3,"speed":"normal"},
- {"prompt":"¿Cuánto es 4 × 7?","correct":["28"],"incorrect":["32","24","35","21"],"readingTime":3,"speed":"normal"},
- {"prompt":"¿Cuánto es 5 × 9?","correct":["45"],"incorrect":["50","40","54","36"],"readingTime":3,"speed":"normal"},
- {"prompt":"¿Cuánto es 6 × 6?","correct":["36"],"incorrect":["42","30","37","35"],"readingTime":3,"speed":"normal"},
- {"prompt":"¿Cuánto es 7 × 4?","correct":["28"],"incorrect":["35","21","32","24"],"readingTime":3,"speed":"normal"},
- {"prompt":"¿Cuánto es 8 × 5?","correct":["40"],"incorrect":["48","32","45","35"],"readingTime":3,"speed":"normal"},
- {"prompt":"¿Cuánto es 9 × 3?","correct":["27"],"incorrect":["36","18","30","24"],"readingTime":3,"speed":"normal"},
- {"prompt":"¿Cuánto es 10 × 7?","correct":["70"],"incorrect":["80","60","77","63"],"readingTime":3,"speed":"normal"},
- {"prompt":"¿Cuánto es 3 × 9?","correct":["27"],"incorrect":["30","24","36","18"],"readingTime":3,"speed":"normal"},
- {"prompt":"¿Cuánto es 4 × 8?","correct":["32"],"incorrect":["36","28","40","24"],"readingTime":3,"speed":"normal"},
- {"prompt":"¿Cuánto es 6 × 7?","correct":["42"],"incorrect":["48","36","49","35"],"readingTime":3,"speed":"normal"},
- {"prompt":"¿Cuánto es 7 × 8?","correct":["56"],"incorrect":["63","49","64","48"],"readingTime":3,"speed":"normal"},
- {"prompt":"¿Cuánto es 6 × 9?","correct":["54"],"incorrect":["60","48","63","45"],"readingTime":3,"speed":"normal"},
- {"prompt":"¿Cuánto es 8 × 8?","correct":["64"],"incorrect":["72","56","65","63"],"readingTime":3,"speed":"normal"},
- {"prompt":"¿Cuánto es 9 × 9?","correct":["81"],"incorrect":["90","72","82","80"],"readingTime":3,"speed":"normal"},
- {"prompt":"¿Cuánto es 7 × 7?","correct":["49"],"incorrect":["56","42","50","48"],"readingTime":3,"speed":"normal"},
- {"prompt":"¿Cuánto es 8 × 9?","correct":["72"],"incorrect":["80","64","81","63"],"readingTime":3,"speed":"normal"},
- {"prompt":"Completa: 7 × __ = 56","correct":["8"],"incorrect":["6","7","9","49"],"readingTime":3,"speed":"normal"},
- {"prompt":"Completa: 9 × __ = 54","correct":["6"],"incorrect":["5","7","8","45"],"readingTime":3,"speed":"normal"}
 ]},
 {name:"Geometría",questions:[
  {"prompt":"Figura con 3 lados","correct":["triángulo"],"incorrect":["cuadrado","círculo","rectángulo","pentágono"],"readingTime":3,"speed":"lenta"},
@@ -269,14 +254,29 @@ try{if(localStorage.getItem('repasoVer')!=VER){
  DEF.subjects.forEach(ds=>{let s=DB.subjects.find(x=>x.name==ds.name);if(!s)DB.subjects.push(s={name:ds.name,topics:[]});
   ds.topics.forEach(dt=>{let t=s.topics.find(x=>x.name==dt.name);if(!t)s.topics.push(t={name:dt.name,questions:[]});
    dt.questions.forEach(q=>{if(!t.questions.some(y=>y.prompt==q.prompt&&JSON.stringify(y.correct)==JSON.stringify(q.correct)))t.questions.push(JSON.parse(JSON.stringify(q)))})})});
- DB.subjects.forEach(s=>s.topics=s.topics.filter(t=>t.questions.length));DB.subjects=DB.subjects.filter(s=>s.topics.length);
+ DB.subjects.forEach(s=>s.topics=s.topics.filter(t=>t.questions.length||isTab(s,t)));DB.subjects=DB.subjects.filter(s=>s.topics.length);
  save();localStorage.setItem('repasoVer',VER)}}catch(e){}
+/* ===== TABLAS DE MULTIPLICAR (preguntas generadas según las tablas elegidas) ===== */
+function isTab(s,t){return s&&t&&s.name=='Matemáticas'&&t.name=='Tablas de multiplicar'}
+let TSEL;try{TSEL=JSON.parse(localStorage.getItem('tablasSel'))}catch(e){}
+if(!Array.isArray(TSEL))TSEL=Array.from({length:13},(_,i)=>i);
+const saveT=()=>{try{localStorage.setItem('tablasSel',JSON.stringify(TSEL))}catch(e){}};
+function tabQs(){const out=[];TSEL.forEach(t=>{for(let n=0;n<=12;n++){const r=t*n,c=new Set([t*(n+1),n>0?t*(n-1):-1,r+t,r-t,r+1,r-1,r+2,r-2,r+10,r-10,t+n,n,t,(t+1)*n,(t-1)*n].filter(v=>v>=0&&v!=r&&v<=200));
+ let k=1;while(c.size<4){if(k!=r)c.add(k);k++}
+ const inc=[...c].sort(()=>Math.random()-.5).slice(0,4).map(String);
+ out.push({prompt:'¿Cuánto es '+t+' × '+n+'?',correct:[String(r)],incorrect:inc,readingTime:3,speed:'normal'})}});return out}
+function tabUI(){const s=DB.subjects[$('#sSub').value],t=s&&s.topics[$('#sTop').value],on=isTab(s,t);$('#tabs').hidden=!on;
+ if(on)$('#tg').innerHTML=Array.from({length:13},(_,i)=>`<button type="button" class="chip${TSEL.includes(i)?' on':''}" data-t="${i}" aria-pressed="${TSEL.includes(i)}">${i}</button>`).join('')}
+$('#tg').onclick=e=>{const b=e.target.closest('[data-t]');if(!b)return;const i=+b.dataset.t;TSEL=TSEL.includes(i)?TSEL.filter(x=>x!=i):TSEL.concat(i).sort((a,b)=>a-b);saveT();tabUI()};
+$('#tAll').onclick=()=>{TSEL=Array.from({length:13},(_,i)=>i);saveT();tabUI()};
+$('#tNone').onclick=()=>{TSEL=[];saveT();tabUI()};
 /* ===== MENÚ ===== */
 const show=id=>['menu','game','over','ed'].forEach(x=>$('#'+x).hidden=x!=id);
 function fill(sel,arr,extra){const v=sel.value;sel.innerHTML=arr.map((o,i)=>`<option value="${i}">${esc(o.name)}</option>`).join('')+(extra?'<option value="new">➕ Nueva…</option>':'');if([...sel.options].some(o=>o.value==v))sel.value=v}
-function refresh(){fill($('#sSub'),DB.subjects);const s=DB.subjects[$('#sSub').value];fill($('#sTop'),s?s.topics:[])}
+function refresh(){fill($('#sSub'),DB.subjects);const s=DB.subjects[$('#sSub').value];fill($('#sTop'),s?s.topics:[]);tabUI()}
+$('#sTop').onchange=tabUI;
 $('#sSub').onchange=()=>{$('#sTop').innerHTML='';refresh()};
-function cur(){try{return DB.subjects[$('#sSub').value].topics[$('#sTop').value].questions.filter(q=>q.prompt&&q.correct&&q.correct.length)}catch(e){return[]}}
+function cur(){try{const s=DB.subjects[$('#sSub').value];if(isTab(s,s.topics[$('#sTop').value]))return tabQs();return DB.subjects[$('#sSub').value].topics[$('#sTop').value].questions.filter(q=>q.prompt&&q.correct&&q.correct.length)}catch(e){return[]}}
 document.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>start(+b.dataset.m));
 /* ===== EDITOR ===== */
 const say=t=>$('#msg').textContent=t,dump=()=>$('#json').value=JSON.stringify(DB,null,1);
@@ -309,7 +309,7 @@ const BGI=new Image(),MI=new Image();BGI.src='data:image/jpeg;base64,/9j/4AAQSkZ
 const cv=$('#cv'),X=cv.getContext('2d'),W=640,H=400,GY=H-70;let G=null,keys={};
 const sh=a=>a.map(x=>[Math.random(),x]).sort((a,b)=>a[0]-b[0]).map(x=>x[1]),pick=a=>a[Math.floor(Math.random()*a.length)];
 const HINTS=['','← → o arrastra: mueve la cesta y atrapa la caja correcta','← → o toca izquierda/centro/derecha: cambia de carril. Coge las correctas, esquiva las demás','↑/Espacio: saltar · ↓: agacharse (táctil: toca arriba / abajo). Suelo: salta para esquivar · Aire: agáchate para esquivar'];
-function start(m){const qs=cur();if(!qs.length)return alert('Este nivel no tiene preguntas');snd(440,.05);
+function start(m){const qs=cur();if(!qs.length)return alert(!$('#tabs').hidden?'Elige al menos una tabla de multiplicar':'Este nivel no tiene preguntas');snd(440,.05);
  G={mode:m,lvl:+$('#sLvl').value,order:sh(qs),r:0,lives:3,score:0,combo:0,maxC:0,ok:0,bad:0,jh:0,vy:0,px:W/2,lane:1,bg:0,pause:0,over:0};
  $('#hint').textContent=HINTS[m];show('game');newRound()}
 function newRound(){const q=G.q=G.order[G.r%G.order.length],s=(q.speed||'n')[0];G.sm=s=='l'?.45:s=='r'?.9:.65;G.rt=Math.max(0,Math.min(5,+q.readingTime||0));G.t=G.rt;G.st='read';G.items=[];G.spawned=0;G.sp=0;G.rd=0;
@@ -319,7 +319,7 @@ function newRound(){const q=G.q=G.order[G.r%G.order.length],s=(q.speed||'n')[0];
 function res(ok){if(ok){G.combo++;G.maxC=Math.max(G.maxC,G.combo);G.score+=100*G.lvl;G.ok++;SFX.ok();G.fl=[.25,'#2ecc71']}else{G.lives--;G.combo=0;G.bad++;SFX.bad();G.fl=[.25,'#e74c3c'];if(G.lives<=0)finish(0)}}
 function endRound(){G.r++;G.items=[];if(G.r>=10)return finish(1);G.st='wait';G.pause=.9}
 function finish(w){if(G.over)return;G.over=1;SFX.over();setTimeout(()=>{if(!G)return;$('#oT').textContent=w?'🏆 ¡Lo has conseguido!':'💥 Game Over';
- $('#oS').innerHTML=`✅ Aciertos: <b>${G.ok}</b> &nbsp; ❌ Fallos: <b>${G.bad}</b><br>PTOS: <b>${G.score}</b><br>Rondas: ${Math.min(G.r+(w?0:1),10)}/10`;show('over');embedOver()},900)}
+ $('#oS').innerHTML=`✅ Aciertos: <b>${G.ok}</b> &nbsp; ❌ Fallos: <b>${G.bad}</b><br>PTOS: <b>${G.score}</b><br>Rondas: ${Math.min(G.r+(w?0:1),10)}/10`;show('over')},900)}
 function upd(dt){if(G.fl)G.fl[0]-=dt;
  if(G.pause>0){G.pause-=dt;if(G.pause<=0)newRound();return}
  const m=G.mode,sm=G.sm;
@@ -369,16 +369,4 @@ cv.addEventListener('pointerdown',e=>ptr(e,1));cv.addEventListener('pointermove'
 $('#bExit').onclick=()=>{G=null;show('menu')};$('#bMenu').onclick=()=>{G=null;show('menu')};$('#bAgain').onclick=()=>start(G.mode);
 let last=0;function loop(n){const dt=Math.min((n-last)/1000,.05);last=n;if(G){if(!G.over)upd(dt);if(G)draw()}requestAnimationFrame(loop)}
 refresh();requestAnimationFrame(n=>{last=n;loop(n)});
-
-/* ===== MODO INCRUSTADO (cuando se abre desde La Ruleta) ===== */
-const EMB=(window.parent!==window);
-if(EMB){const e=$('#bEd');if(e)e.hidden=true}
-function embedOver(){
- if(!EMB||!G)return;
- const pts=G.score,b=$('#bReturn');
- b.hidden=false;b.textContent='✅ Volver con '+pts+' puntos';
- try{window.parent.postMessage({type:'superreto-over'},'*')}catch(e){}
- $('#bAgain').hidden=true;$('#bMenu').hidden=true;
- b.onclick=()=>{b.disabled=true;window.parent.postMessage({type:'superreto-result',score:pts},'*')};
-}
 </script></body></html>
