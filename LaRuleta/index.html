@@ -4387,7 +4387,7 @@ body.roulette-overlay-open .wheel-area {
     <button class="solve-btn" id="solveBtn">🗣️ RESOLVER LA FRASE COMPLETA</button>
     <div class="solve-box" id="solveBox">
       <label>✍️ Escribe la frase entera y pulsa COMPROBAR</label>
-      <input type="text" id="solveInput" maxlength="70" autocomplete="off"
+      <input type="text" id="solveInput" maxlength="140" autocomplete="off"
              spellcheck="false" placeholder="Escribe aquí la frase...">
       <div class="solve-actions">
         <button class="solve-ok" id="solveConfirm">✅ COMPROBAR</button>
@@ -4649,27 +4649,27 @@ const DEFAULT_SCHOOL_SUBJECTS = {
   "Matem\xE1ticas": {
     topics: {
       "N\xFAmeros": [
-        { text: "EL N\xDAMERO ANTERIOR A 500 ES 499", clue: "\xBFQu\xE9 n\xFAmero va justo antes de 500?" },
-        { text: "EL N\xDAMERO POSTERIOR A 999 ES 1000", clue: "\xBFQu\xE9 n\xFAmero va justo despu\xE9s de 999?" },
-        { text: "EN EL N\xDAMERO 348 EL 3 REPRESENTA TRES CENTENAS", clue: "\xBFQu\xE9 valor tiene la cifra 3 en 348?" },
+        { text: "EL N\xDAMERO ANTERIOR A QUINIENTOS ES CUATROCIENTOS NOVENTA Y NUEVE", clue: "\xBFQu\xE9 n\xFAmero va justo antes de quinientos?" },
+        { text: "EL N\xDAMERO POSTERIOR A NOVECIENTOS NOVENTA Y NUEVE ES MIL", clue: "\xBFQu\xE9 n\xFAmero va justo despu\xE9s de novecientos noventa y nueve?" },
+        { text: "EN TRESCIENTOS CUARENTA Y OCHO LA CIFRA TRES REPRESENTA TRES CENTENAS", clue: "\xBFQu\xE9 valor tiene la cifra tres en trescientos cuarenta y ocho?" },
         { text: "UN MILLAR SON MIL UNIDADES", clue: "\xBFCu\xE1ntas unidades forman un millar?" },
-        { text: "LOS N\xDAMEROS PARES TERMINAN EN 0 2 4 6 U 8", clue: "Mira la \xFAltima cifra para saber si un n\xFAmero es par." },
-        { text: "EN 725 EL 7 EST\xC1 EN LA POSICI\xD3N DE LAS CENTENAS", clue: "\xBFEn qu\xE9 posici\xF3n est\xE1 la cifra 7 de 725?" }
+        { text: "LOS N\xDAMEROS PARES TERMINAN EN CERO DOS CUATRO SEIS U OCHO", clue: "Mira la \xFAltima cifra para saber si un n\xFAmero es par." },
+        { text: "EN SETECIENTOS VEINTICINCO LA CIFRA SIETE EST\xC1 EN LA POSICI\xD3N DE LAS CENTENAS", clue: "\xBFEn qu\xE9 posici\xF3n est\xE1 la cifra siete de setecientos veinticinco?" }
       ],
       "Sumas y restas": [
-        { text: "245 M\xC1S 130 ES IGUAL A 375", clue: "Calcula 245 + 130." },
-        { text: "500 MENOS 175 ES IGUAL A 325", clue: "Calcula 500 - 175." },
+        { text: "DOSCIENTOS CUARENTA Y CINCO M\xC1S CIENTO TREINTA ES IGUAL A TRESCIENTOS SETENTA Y CINCO", clue: "Calcula doscientos cuarenta y cinco m\xE1s ciento treinta." },
+        { text: "QUINIENTOS MENOS CIENTO SETENTA Y CINCO ES IGUAL A TRESCIENTOS VEINTICINCO", clue: "Calcula quinientos menos ciento setenta y cinco." },
         { text: "PARA COMPROBAR UNA RESTA PODEMOS SUMAR LA DIFERENCIA AL SUSTRAENDO", clue: "Forma de comprobar si una resta est\xE1 bien hecha." },
         { text: "AL SUMAR COLOCAMOS UNIDADES DEBAJO DE UNIDADES", clue: "Regla para colocar correctamente los n\xFAmeros en una suma." },
-        { text: "SI A 600 LE RESTAMOS 200 OBTENEMOS 400", clue: "Calcula 600 - 200." },
-        { text: "125 M\xC1S 125 ES IGUAL A 250", clue: "Calcula 125 + 125." }
+        { text: "SI A SEISCIENTOS LE RESTAMOS DOSCIENTOS OBTENEMOS CUATROCIENTOS", clue: "Calcula seiscientos menos doscientos." },
+        { text: "CIENTO VEINTICINCO M\xC1S CIENTO VEINTICINCO ES IGUAL A DOSCIENTOS CINCUENTA", clue: "Calcula ciento veinticinco m\xE1s ciento veinticinco." }
       ],
       "Multiplicaci\xF3n y divisi\xF3n": [
         { text: "MULTIPLICAR ES SUMAR VARIAS VECES LA MISMA CANTIDAD", clue: "\xBFQu\xE9 operaci\xF3n permite sumar repetidamente una cantidad igual?" },
-        { text: "3 POR 4 ES IGUAL A 12", clue: "Calcula 3 \xD7 4." },
-        { text: "5 POR 6 ES IGUAL A 30", clue: "Calcula 5 \xD7 6." },
+        { text: "TRES POR CUATRO ES IGUAL A DOCE", clue: "Calcula tres por cuatro." },
+        { text: "CINCO POR SEIS ES IGUAL A TREINTA", clue: "Calcula cinco por seis." },
         { text: "DIVIDIR ES REPARTIR UNA CANTIDAD EN PARTES IGUALES", clue: "\xBFQu\xE9 operaci\xF3n usamos para repartir por igual?" },
-        { text: "20 DIVIDIDO ENTRE 4 ES IGUAL A 5", clue: "Reparte 20 en 4 grupos iguales." },
+        { text: "VEINTE DIVIDIDO ENTRE CUATRO ES IGUAL A CINCO", clue: "Reparte veinte en cuatro grupos iguales." },
         { text: "LA MULTIPLICACI\xD3N Y LA DIVISI\xD3N EST\xC1N RELACIONADAS", clue: "Operaciones que podemos utilizar para comprobarse entre s\xED." }
       ],
       "Problemas y geometr\xEDa": [
@@ -4750,6 +4750,70 @@ Object.entries(ZIP_SUBJECT_UPDATES).forEach(([subjectName, topics]) => {
     });
   });
 });
+
+const __UNI = ["CERO","UNO","DOS","TRES","CUATRO","CINCO","SEIS","SIETE","OCHO","NUEVE","DIEZ","ONCE","DOCE","TRECE","CATORCE","QUINCE","DIECISÉIS","DIECISIETE","DIECIOCHO","DIECINUEVE","VEINTE","VEINTIUNO","VEINTIDÓS","VEINTITRÉS","VEINTICUATRO","VEINTICINCO","VEINTISÉIS","VEINTISIETE","VEINTIOCHO","VEINTINUEVE"];
+const __DEC = ["","","","TREINTA","CUARENTA","CINCUENTA","SESENTA","SETENTA","OCHENTA","NOVENTA"];
+const __CEN = ["","CIENTO","DOSCIENTOS","TRESCIENTOS","CUATROCIENTOS","QUINIENTOS","SEISCIENTOS","SETECIENTOS","OCHOCIENTOS","NOVECIENTOS"];
+function __below1000(n) {
+  if (n === 100) return "CIEN";
+  const c = Math.floor(n / 100), r = n % 100, out = [];
+  if (c) out.push(__CEN[c]);
+  if (r) {
+    if (r < 30) out.push(__UNI[r]);
+    else {
+      const d = Math.floor(r / 10), u = r % 10;
+      out.push(u ? __DEC[d] + " Y " + __UNI[u] : __DEC[d]);
+    }
+  }
+  return out.join(" ");
+}
+function numberToSpanishWords(n) {
+  n = Number(n);
+  if (!isFinite(n) || n < 0 || n > 999999) return String(n);
+  if (n === 0) return "CERO";
+  const th = Math.floor(n / 1000), rest = n % 1000, out = [];
+  if (th) out.push(th === 1 ? "MIL" : __below1000(th).replace(/UNO$/, "UN") + " MIL");
+  if (rest) out.push(__below1000(rest));
+  return out.join(" ");
+}
+function replaceDigitsWithWords(text) {
+  return String(text == null ? "" : text).replace(/\d+/g, (m) => numberToSpanishWords(parseInt(m, 10))).replace(/\s+/g, " ").trim();
+}
+function phraseWithoutDigits(text) {
+  text = String(text == null ? "" : text);
+  return /\d/.test(text) ? replaceDigitsWithWords(text.toUpperCase()) : text;
+}
+const __OLD_MATH_FIXES = {
+  "EL NÚMERO ANTERIOR A 500 ES 499": "EL NÚMERO ANTERIOR A QUINIENTOS ES CUATROCIENTOS NOVENTA Y NUEVE",
+  "EL NÚMERO POSTERIOR A 999 ES 1000": "EL NÚMERO POSTERIOR A NOVECIENTOS NOVENTA Y NUEVE ES MIL",
+  "EN EL NÚMERO 348 EL 3 REPRESENTA TRES CENTENAS": "EN TRESCIENTOS CUARENTA Y OCHO LA CIFRA TRES REPRESENTA TRES CENTENAS",
+  "LOS NÚMEROS PARES TERMINAN EN 0 2 4 6 U 8": "LOS NÚMEROS PARES TERMINAN EN CERO DOS CUATRO SEIS U OCHO",
+  "EN 725 EL 7 ESTÁ EN LA POSICIÓN DE LAS CENTENAS": "EN SETECIENTOS VEINTICINCO LA CIFRA SIETE ESTÁ EN LA POSICIÓN DE LAS CENTENAS",
+  "245 MÁS 130 ES IGUAL A 375": "DOSCIENTOS CUARENTA Y CINCO MÁS CIENTO TREINTA ES IGUAL A TRESCIENTOS SETENTA Y CINCO",
+  "500 MENOS 175 ES IGUAL A 325": "QUINIENTOS MENOS CIENTO SETENTA Y CINCO ES IGUAL A TRESCIENTOS VEINTICINCO",
+  "SI A 600 LE RESTAMOS 200 OBTENEMOS 400": "SI A SEISCIENTOS LE RESTAMOS DOSCIENTOS OBTENEMOS CUATROCIENTOS",
+  "125 MÁS 125 ES IGUAL A 250": "CIENTO VEINTICINCO MÁS CIENTO VEINTICINCO ES IGUAL A DOSCIENTOS CINCUENTA",
+  "3 POR 4 ES IGUAL A 12": "TRES POR CUATRO ES IGUAL A DOCE",
+  "5 POR 6 ES IGUAL A 30": "CINCO POR SEIS ES IGUAL A TREINTA",
+  "20 DIVIDIDO ENTRE 4 ES IGUAL A 5": "VEINTE DIVIDIDO ENTRE CUATRO ES IGUAL A CINCO"
+};
+const __NEW_MATH_CLUES = {
+  "EL NÚMERO ANTERIOR A QUINIENTOS ES CUATROCIENTOS NOVENTA Y NUEVE": "¿Qué número va justo antes de quinientos?",
+  "EL NÚMERO POSTERIOR A NOVECIENTOS NOVENTA Y NUEVE ES MIL": "¿Qué número va justo después de novecientos noventa y nueve?",
+  "EN TRESCIENTOS CUARENTA Y OCHO LA CIFRA TRES REPRESENTA TRES CENTENAS": "¿Qué valor tiene la cifra tres en trescientos cuarenta y ocho?",
+  "EN SETECIENTOS VEINTICINCO LA CIFRA SIETE ESTÁ EN LA POSICIÓN DE LAS CENTENAS": "¿En qué posición está la cifra siete de setecientos veinticinco?",
+  "DOSCIENTOS CUARENTA Y CINCO MÁS CIENTO TREINTA ES IGUAL A TRESCIENTOS SETENTA Y CINCO": "Calcula doscientos cuarenta y cinco más ciento treinta.",
+  "QUINIENTOS MENOS CIENTO SETENTA Y CINCO ES IGUAL A TRESCIENTOS VEINTICINCO": "Calcula quinientos menos ciento setenta y cinco.",
+  "SI A SEISCIENTOS LE RESTAMOS DOSCIENTOS OBTENEMOS CUATROCIENTOS": "Calcula seiscientos menos doscientos.",
+  "CIENTO VEINTICINCO MÁS CIENTO VEINTICINCO ES IGUAL A DOSCIENTOS CINCUENTA": "Calcula ciento veinticinco más ciento veinticinco.",
+  "TRES POR CUATRO ES IGUAL A DOCE": "Calcula tres por cuatro.",
+  "CINCO POR SEIS ES IGUAL A TREINTA": "Calcula cinco por seis.",
+  "VEINTE DIVIDIDO ENTRE CUATRO ES IGUAL A CINCO": "Reparte veinte en cuatro grupos iguales."
+};
+function fixPhraseText(text) {
+  const t = String(text == null ? "" : text).trim();
+  return __OLD_MATH_FIXES[t.toUpperCase()] || phraseWithoutDigits(t);
+}
 function loadLibrary() {
   try {
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
@@ -4768,8 +4832,13 @@ function loadLibrary() {
           Object.keys(rawTopics).forEach((topic) => {
             const list = Array.isArray(rawTopics[topic]) ? rawTopics[topic] : [];
             nested[subject].topics[topic] = list.map((item) => {
-              const text = typeof item === "string" ? item.trim() : String((item == null ? void 0 : item.text) || "").trim();
-              const clue = typeof item === "object" ? String((item == null ? void 0 : item.clue) || "").trim() : "";
+              let text = typeof item === "string" ? item.trim() : String((item == null ? void 0 : item.text) || "").trim();
+              let clue = typeof item === "object" ? String((item == null ? void 0 : item.clue) || "").trim() : "";
+              const fixed = fixPhraseText(text);
+              if (fixed !== text) {
+                text = fixed;
+                clue = __NEW_MATH_CLUES[text] || clueForPhrase(text) || clue;
+              }
               return { text, clue: clue || clueForPhrase(text) };
             }).filter((item) => item.text);
           });
@@ -6155,47 +6224,72 @@ function fitPhraseBoard() {
   if (!board) return;
   const tileEls = board.querySelectorAll(".tile"), spaceEls = board.querySelectorAll(".word-space-tile");
   if (!tileEls.length) return;
-  const vw = Math.max(document.documentElement.clientWidth || 1200, 320);
-  const vh = Math.max(document.documentElement.clientHeight || 700, 500);
-  const bw = Math.max(18, Math.min(48, vw * 0.032));
-  const bh = Math.max(26, Math.min(58, vh * 0.056));
-  const bf = Math.max(12, Math.min(29, vw * 0.027));
-  const bg = Math.max(4, Math.min(12, vw * 8e-3));
-  const apply = (q) => {
-    const w = bw * q, h = bh * q;
-    const f = Math.max(9, Math.min(bf * q, h * 0.62));
-    const g = Math.max(2, bg * q);
+  const stage = board.closest(".board-stage") || board.parentElement;
+  const vw = Math.max(document.documentElement.clientWidth || window.innerWidth || 1200, 280);
+  const vh = Math.max(window.innerHeight || document.documentElement.clientHeight || 700, 400);
+  // 1) Altura disponible: lo que queda de pantalla por debajo del tablero (teclado, mensajes, etc.)
+  board.style.setProperty("transition", "none", "important");
+  board.style.setProperty("max-height", "none", "important");
+  board.style.setProperty("min-height", "0", "important");
+  let below = 0;
+  const parent = stage.parentElement;
+  if (parent) {
+    const gap = parseFloat(getComputedStyle(parent).rowGap) || 8;
+    for (let n = stage.nextElementSibling; n; n = n.nextElementSibling) {
+      const cs = getComputedStyle(n);
+      if (cs.display === "none" || cs.position === "absolute" || cs.position === "fixed") continue;
+      const r = n.getBoundingClientRect();
+      if (r.height > 0) below += r.height + gap;
+    }
+  }
+  const top = stage.getBoundingClientRect().top;
+  const desktop = vw > 900;
+  let avail = desktop ? vh - top - below - 62 : vh * 0.42;
+  avail = Math.max(vh * (desktop ? 0.16 : 0.2), Math.min(avail, vh * 0.55));
+  board.style.setProperty("max-height", avail + "px", "important");
+  board.style.setProperty("overflow", "hidden", "important");
+  // 2) Tamaño máximo de casilla que permite ver TODA la frase sin cortes
+  const maxW = Math.min(vw * 0.09, 128);
+  const minW = 7;
+  const apply = (w) => {
+    const h = w * 1.38;
+    const f = Math.max(7, h * 0.56);
+    const g = Math.max(2, w * 0.13);
     tileEls.forEach((e) => {
-      e.style.setProperty("width", "".concat(w, "px"), "important");
-      e.style.setProperty("height", "".concat(h, "px"), "important");
-      e.style.setProperty("font-size", "".concat(f, "px"), "important");
+      e.style.setProperty("transition", "background .15s, box-shadow .15s, transform .15s, color .15s, border-color .15s", "important");
+      e.style.setProperty("width", w + "px", "important");
+      e.style.setProperty("min-width", "0", "important");
+      e.style.setProperty("height", h + "px", "important");
+      e.style.setProperty("font-size", f + "px", "important");
       e.style.setProperty("line-height", "1", "important");
       e.style.setProperty("padding", "0", "important");
+      e.style.setProperty("border-width", Math.max(1, Math.min(2, w / 16)) + "px", "important");
     });
     spaceEls.forEach((e) => {
-      e.style.setProperty("width", "".concat(Math.max(6, w * 0.42), "px"), "important");
-      e.style.setProperty("height", "".concat(h, "px"), "important");
+      e.style.setProperty("transition", "none", "important");
+      e.style.setProperty("width", Math.max(5, w * 0.42) + "px", "important");
+      e.style.setProperty("min-width", "0", "important");
+      e.style.setProperty("height", h + "px", "important");
     });
-    board.querySelectorAll(".word").forEach((e) => e.style.setProperty("gap", "".concat(g, "px"), "important"));
-    board.style.setProperty("column-gap", "".concat(g, "px"), "important");
-    board.style.setProperty("row-gap", "".concat(Math.max(3, g * 0.7), "px"), "important");
+    board.querySelectorAll(".word").forEach((e) => e.style.setProperty("gap", g + "px", "important"));
+    board.style.setProperty("column-gap", g + "px", "important");
+    board.style.setProperty("row-gap", Math.max(3, g * 0.9) + "px", "important");
+    const pad = Math.max(6, Math.min(18, w * 0.4));
+    board.style.setProperty("padding", pad + "px", "important");
   };
-  const fits = () => board.scrollWidth <= board.clientWidth + 3 && board.scrollHeight <= board.clientHeight + 3;
-  apply(1);
+  const fits = () => board.scrollWidth <= board.clientWidth + 1 && board.scrollHeight <= board.clientHeight + 1;
+  apply(maxW);
   if (fits()) return;
-  let low = 0.4, high = 1, best = 0.4;
-  for (let i = 0; i < 7; i++) {
+  let low = minW, high = maxW;
+  apply(minW);
+  for (let i = 0; i < 16; i++) {
     const mid = (low + high) / 2;
     apply(mid);
-    if (fits()) {
-      best = mid;
-      low = mid;
-    } else high = mid;
+    if (fits()) low = mid;
+    else high = mid;
   }
-  apply(best);
-  requestAnimationFrame(() => {
-    if (board.isConnected && !fits()) apply(Math.max(0.34, best - 0.05));
-  });
+  apply(low);
+  if (!fits()) apply(Math.max(4, low - 1));
 }
 requestAnimationFrame(fitPhraseBoard);
 function revealLetter(L) {
@@ -6405,6 +6499,7 @@ function winRound(reason) {
 function nextPhrase() {
   if (queue.length === 0) queue = shuffle(getGamePhrases());
   current = queue.pop();
+  if (current && /\d/.test(String(current.text))) current = Object.assign({}, current, { text: fixPhraseText(current.text) });
   currentValue = 0;
   consonantRequired = false;
   spinning = false;
@@ -10375,7 +10470,7 @@ var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
   function editPhrase(row, idx) {
     const list = library.subjects[adminSelectedSubject].topics[adminSelectedTopic], p = list[idx];
     if (!p) return;
-    row.innerHTML = '<div class="phrase-item-content"><input class="r2-in" data-f="text" maxlength="90" value="'.concat(esc(p.text), '" aria-label="Frase"><input class="r2-in" data-f="clue" maxlength="160" value="').concat(esc(p.clue || ""), '" placeholder="Pista" aria-label="Pista"></div><div class="phrase-actions"><button type="button" class="admin-primary" data-a="save">Guardar</button><button type="button" class="admin-secondary" data-a="cancel">\u2716</button></div>');
+    row.innerHTML = '<div class="phrase-item-content"><input class="r2-in" data-f="text" maxlength="140" value="'.concat(esc(p.text), '" aria-label="Frase"><input class="r2-in" data-f="clue" maxlength="160" value="').concat(esc(p.clue || ""), '" placeholder="Pista" aria-label="Pista"></div><div class="phrase-actions"><button type="button" class="admin-primary" data-a="save">Guardar</button><button type="button" class="admin-secondary" data-a="cancel">\u2716</button></div>');
     row.querySelector('[data-a="cancel"]').addEventListener("click", () => renderAdmin());
     row.querySelector('[data-a="save"]').addEventListener("click", () => {
       const text = cleanPhrase(row.querySelector('[data-f="text"]').value), clue = row.querySelector('[data-f="clue"]').value.trim();
@@ -11989,3 +12084,42 @@ body.test-picking #wheel{cursor:pointer;pointer-events:auto!important}
   color: #fff !important;
 }
 </style>
+<script id="board-fit-v2">(function() {
+  function refit() {
+    if (typeof fitPhraseBoard === "function" && document.body.classList.contains("game-active")) requestAnimationFrame(fitPhraseBoard);
+  }
+  window.addEventListener("resize", refit);
+  window.addEventListener("orientationchange", () => setTimeout(refit, 250));
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(refit);
+  if (window.ResizeObserver) {
+    const ro = new ResizeObserver(refit);
+    const watch = () => {
+      ["message", "keyboard", "vowelPanel", "clueBox", "solveBox"].forEach((id) => {
+        const el = document.getElementById(id);
+        if (el && !el.__fitWatched) { el.__fitWatched = true; ro.observe(el); }
+      });
+    };
+    watch();
+    setTimeout(watch, 1500);
+  }
+})();</script>
+<style id="board-fit-v2-css">
+body .game-content .board-stage .board,
+body .board-stage .board {
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+  flex-wrap: wrap !important;
+  justify-content: center !important;
+  align-content: center !important;
+}
+body .game-content .board-stage .word,
+body .board-stage .word {
+  flex: 0 0 auto !important;
+  max-width: none !important;
+}
+body .game-content .board-stage .tile,
+body .game-content .board-stage .word-space-tile {
+  flex: 0 0 auto !important;
+}
+</style>
+
